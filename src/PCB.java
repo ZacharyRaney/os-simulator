@@ -1,6 +1,3 @@
-/**
- * Created by zacharyraney on 11/16/16.
- */
 public class PCB {
     public enum State {
         NEW, READY, RUN, WAIT, EXIT

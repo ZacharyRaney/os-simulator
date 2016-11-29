@@ -1,6 +1,15 @@
-/**
- * Created by zacharyraney on 11/16/16.
- */
 public class Memory {
-    // TODO
+    public static int size = 256000;
+    private int available;
+
+    public Memory() {
+        available = size;
+    }
+
+    public boolean addProgram(int size) {
+        if(size <= available) {
+            available = available - size;
+            return true;
+        } else return false;
+    }
 }

@@ -1,13 +1,14 @@
-/**
- * Created by zacharyraney on 11/3/16.
- */
+import java.util.Arrays;
+
 public class Process {
     private int size;
-    private String[] instructions;
+    public String[] instructions;
 
-    public Process(int size, String[] instructions) {
-        this.size = size;
-        this.instructions = instructions.clone();
+    public PCB pcb;
+
+    public Process(String[] instructions) {
+        this.size = Integer.parseInt(instructions[0]);
+        this.instructions = Arrays.copyOfRange(instructions, 1, instructions.length);
     }
 
 }
