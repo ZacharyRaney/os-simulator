@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class Process {
-    private int size;
+    public int size;
     public String[] instructions;
 
     public PCB pcb;

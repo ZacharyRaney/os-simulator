@@ -10,6 +10,7 @@ public class Scheduler {
     private Queue<Process> waitingQueue; // Waiting for memory space
     private Queue<Process> deviceQueue;  // Waiting for IO
     private CPU cpu;
+    private Memory memory;
 
     public Scheduler() {
         jobQueue = new LinkedList<>();
@@ -17,6 +18,17 @@ public class Scheduler {
         deviceQueue = new LinkedList<>();
         waitingQueue = new LinkedList<>();
         cpu = new CPU();
+        memory = new Memory();
+    }
+
+    public void addProcess(Process process){
+        if(!memory.addProgram(process.size)){   // no room in memory
+            waitingQueue.add(process);
+        } else {
+            readyQueue.add(process);
+            process.pcb.state = PCB.State.READY;
+        }
+        jobQueue.add(process);
     }
 
     public void schedulerLoop(){
@@ -47,7 +59,12 @@ public class Scheduler {
     public void insertPCB(Process process) {
         process.pcb = new PCB();
     }
-    //removePCB()
+    public void removePCB(Process process) {
+        // TODO: Remove process from jobQueue
+        process.pcb = null;
+        memory.removeProgram(process.size);
+        // TODO: Try to add processes from waitingQueue
+    }
     //getState()
     //setState()
     //getWait()

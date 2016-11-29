@@ -1,2 +1,2 @@
-# os-simulator
-An operating system simulator for a class project
+# os-Simulator
+An operating system Simulator for a class project

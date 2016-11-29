@@ -20,10 +20,12 @@ public class CPU {
 
     // CPU loop
     public Status run(int cycles) {
+        process.pcb.state = PCB.State.RUN;
         for(int i = 0; i < cycles; i++) {
             if (counter < process.instructions.length) {
                 currentInstruction = process.instructions[counter];
             } else {
+                process.pcb.state = PCB.State.EXIT;
                 return Status.END;
             }
             switch (currentInstruction) {
