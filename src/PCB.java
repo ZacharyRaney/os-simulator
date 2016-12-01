@@ -8,6 +8,6 @@ public class PCB {
 
     public PCB() {
         state = State.NEW;
-        counter = 0;
+        counter = 0;	// Keeps track of what line of the program we are on
     }
 }

@@ -7,8 +7,8 @@ public class Process {
     public PCB pcb;
 
     public Process(String[] instructions) {
-        this.size = Integer.parseInt(instructions[0]);
-        this.instructions = Arrays.copyOfRange(instructions, 1, instructions.length);
+        this.size = Integer.parseInt(instructions[0]) + 8;	// Add space for PCB
+        this.instructions = Arrays.copyOfRange(instructions, 1, instructions.length - 1);
     }
 
 }

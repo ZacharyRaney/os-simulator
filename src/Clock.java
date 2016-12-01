@@ -1,3 +1,7 @@
+/*
+ * Allows limiting the speed of the CPU and keeps a counter of total cycles
+ */
+
 import java.util.concurrent.TimeUnit;
 
 public class Clock {
@@ -21,5 +25,8 @@ public class Clock {
     }
     public int getClock() {
         return tick;
+    }
+    public void setClock(int t) {
+    	tick = t;
     }
 }

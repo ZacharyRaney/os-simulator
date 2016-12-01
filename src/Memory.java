@@ -16,4 +16,8 @@ public class Memory {
     public void removeProgram(int size) {
         available += size;
     }
+    
+    public int getAvailable() {
+    	return available;
+    }
 }
