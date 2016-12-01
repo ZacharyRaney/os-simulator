@@ -1,0 +1,6 @@
+LOAD 0 notepad.p
+LOAD 0 filebrowser.p
+LOAD 10 calculator.p
+LOAD 15 filebrowser.p
+LOAD 20 notepad.p
+EXE

@@ -21,6 +21,7 @@ public class Clock {
                 e.printStackTrace();
             }
         }
+        tick++;
         return 0;
     }
     public int getClock() {

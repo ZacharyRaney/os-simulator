@@ -1,2 +1,0 @@
-LOAD 0 notepad
-EXE

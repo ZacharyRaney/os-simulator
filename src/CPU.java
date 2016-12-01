@@ -20,7 +20,7 @@ public class CPU {
     public void switchProcess(Process process) {
         this.process = process;
         counter = this.process.pcb.counter;
-
+        process.pcb.state = PCB.State.RUN;
     }
 
     // CPU loop
@@ -36,13 +36,7 @@ public class CPU {
             }
             advanceClock();
             cpuCycles++;
-            Process interrupt = scheduler.interruptProcessor.signalInterrupt(clock.getClock());	// Do we have any interrupts?
-        	if(interrupt != null) {
-        		scheduler.readyQueue.add(interrupt);
-        	}
-        	if(scheduler.nextScheduled == clock.getClock()) {
-            	scheduler.addProcess(scheduler.getArrival(clock.getClock()));
-            }
+            detectInterrupt();
         	counter++;
             switch (currentInstruction) {
                 case "CALCULATE":
@@ -60,12 +54,10 @@ public class CPU {
                     scheduler.computer.CPUOut(process);
                     break;
                 default:
-                    // TODO: error out of execution here
-                    break;
-            }
-            
-            while(scheduler.nextScheduled == clock.getClock()) {
-            	scheduler.getArrival(clock.getClock());
+                    process.pcb.counter = counter;
+                    process.pcb.state = PCB.State.EXIT;
+                    scheduler.computer.window.printData("COMMAND ERR! Process: " + process.name + " Line: " + (process.pcb.counter + 1));
+                    return Status.END;
             }
         }
         process.pcb.counter = counter;
@@ -76,13 +68,15 @@ public class CPU {
 
     //---------REQUIRED---------
     private void advanceClock(){
-        // TODO: Decide if there is anything else needed
         clock.execute();
     }
     private void detectInterrupt() {
-        // TODO: Handle interrupts
-    }
-    private void detectPreemption() {
-        // TODO: Handle preemption
+    	Process interrupt = scheduler.interruptProcessor.signalInterrupt(clock.getClock());	// Do we have any interrupts?
+    	if(interrupt != null) {
+    		scheduler.readyQueue.add(interrupt);
+    	}
+    	while(scheduler.nextScheduled == clock.getClock()) {
+        	scheduler.addProcess(scheduler.getArrival(clock.getClock()));
+        }
     }
 }

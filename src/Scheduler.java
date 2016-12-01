@@ -7,10 +7,9 @@ public class Scheduler {
 
     private static int CYCLES = 25;
 
-    private Queue<Process> jobQueue;     // All processes
+    public Queue<Process> jobQueue;     // All processes
     public Queue<Process> readyQueue;   // Ready to execute
     private Queue<Process> waitingQueue; // Waiting for memory space
-    private Queue<Process> deviceQueue;  // Waiting for IO
     private HashMap<Integer, Process> scheduled;
     
     private CPU cpu;
@@ -27,7 +26,6 @@ public class Scheduler {
     public Scheduler(Computer c) {
         jobQueue = new LinkedList<>();
         readyQueue = new LinkedList<>();
-        deviceQueue = new LinkedList<>();
         waitingQueue = new LinkedList<>();
         scheduled = new HashMap<>();
         
@@ -48,9 +46,10 @@ public class Scheduler {
         } else {
         	process.pcb = new PCB();
             readyQueue.add(process);
-            process.pcb.state = PCB.State.READY;
+            process.pcb.state = PCB.State.NEW;
         }
         jobQueue.add(process);
+        computer.window.updateTaskManager(process);
     }
 
     public void schedulerLoop(int maxCycles) {
@@ -62,6 +61,7 @@ public class Scheduler {
         	Process interrupt = interruptProcessor.signalInterrupt(cpu.clock.getClock());	// Do we have any interrupts?
         	if(interrupt != null) {
         		readyQueue.add(interrupt);
+        		interrupt.pcb.state = PCB.State.READY;
         	}
 
             if(cycleCount + CYCLES > maxCycles && maxCycles != 0) {
@@ -87,9 +87,13 @@ public class Scheduler {
         			current = saved;
         			paused = false;
         		}
-        	} else {
+        	} else if (!readyQueue.isEmpty()){
         		current = readyQueue.remove();
         		cpu.switchProcess(current);
+        	} else {
+        		cpu.clock.execute();
+        		cycleCount++;
+        		continue;
         	}
             
             switch (cpu.run(CYCLES)) {
@@ -111,8 +115,7 @@ public class Scheduler {
                     } else removePCB(current);
                     break;
                 case IO:    // Process ready for IO
-                    // TODO: Handle IO
-                    deviceQueue.add(current);
+                    ioScheduler.scheduleIO(current, cpu.clock.getClock());
                     cycleCount += cpu.cpuCycles;
                     break;
                 case YIELD: // Process wants to let next process run
@@ -120,12 +123,16 @@ public class Scheduler {
                     cycleCount += cpu.cpuCycles;
                     break;
             }
+            computer.window.updateTaskManager(current);
         }
     }
     
     public void addWaiting() { // Add a program waiting for memory space
     	if(waitingQueue.peek() != null && memory.addProgram(waitingQueue.peek().size)) { //	is there anything waiting for space and if so do we have the space?
-    		readyQueue.add(waitingQueue.poll());
+    		Process waiting = waitingQueue.poll();
+    		readyQueue.add(waiting);
+    		waiting.pcb.state = PCB.State.READY;
+    		computer.window.updateTaskManager(waiting);
     	}
     }
 
@@ -134,7 +141,6 @@ public class Scheduler {
         process.pcb = new PCB();
     }
     public void removePCB(Process process) {
-        process.pcb = null;
         memory.removeProgram(process.size);
         jobQueue.remove(process);
         addWaiting(); // Since we removed a process from memory, try and add a waiting process
