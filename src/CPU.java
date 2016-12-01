@@ -36,6 +36,14 @@ public class CPU {
             }
             advanceClock();
             cpuCycles++;
+            Process interrupt = scheduler.interruptProcessor.signalInterrupt(clock.getClock());	// Do we have any interrupts?
+        	if(interrupt != null) {
+        		scheduler.readyQueue.add(interrupt);
+        	}
+        	if(scheduler.nextScheduled == clock.getClock()) {
+            	scheduler.addProcess(scheduler.getArrival(clock.getClock()));
+            }
+        	counter++;
             switch (currentInstruction) {
                 case "CALCULATE":
                     break;
@@ -48,13 +56,14 @@ public class CPU {
                     process.pcb.state = PCB.State.READY;
                     return Status.YIELD;
                 case "OUT":
-                    // TODO: Print out PCB info
+                	process.pcb.counter = counter;
+                    scheduler.computer.CPUOut(process);
                     break;
                 default:
                     // TODO: error out of execution here
                     break;
             }
-            counter++;
+            
             while(scheduler.nextScheduled == clock.getClock()) {
             	scheduler.getArrival(clock.getClock());
             }

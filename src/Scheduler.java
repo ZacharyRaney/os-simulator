@@ -8,7 +8,7 @@ public class Scheduler {
     private static int CYCLES = 25;
 
     private Queue<Process> jobQueue;     // All processes
-    private Queue<Process> readyQueue;   // Ready to execute
+    public Queue<Process> readyQueue;   // Ready to execute
     private Queue<Process> waitingQueue; // Waiting for memory space
     private Queue<Process> deviceQueue;  // Waiting for IO
     private HashMap<Integer, Process> scheduled;
@@ -18,12 +18,13 @@ public class Scheduler {
     public EventQueue eventQueue;
     public IOScheduler ioScheduler;
     public InterruptProcessor interruptProcessor;
+    public Computer computer;
     
     private boolean paused;
     private Process saved;
     public int nextScheduled;
 
-    public Scheduler() {
+    public Scheduler(Computer c) {
         jobQueue = new LinkedList<>();
         readyQueue = new LinkedList<>();
         deviceQueue = new LinkedList<>();
@@ -35,6 +36,7 @@ public class Scheduler {
         eventQueue = new EventQueue();
         ioScheduler = new IOScheduler(eventQueue);
         interruptProcessor = new InterruptProcessor(eventQueue);
+        computer = c;
         
         paused = false;
         nextScheduled = -1;
@@ -65,6 +67,10 @@ public class Scheduler {
             if(cycleCount + CYCLES > maxCycles && maxCycles != 0) {
             	CYCLES = maxCycles - cycleCount;
             	pause = true;
+            }
+            
+            if(nextScheduled == cpu.clock.getClock()) {
+            	addProcess(getArrival(cpu.clock.getClock()));
             }
             
             if(CYCLES == 0) return;
@@ -158,7 +164,7 @@ public class Scheduler {
     	return p;
     }
     public void setArrival(int t, Process p) {
-    	if(t < cpu.clock.getClock()) {
+    	if(t < cpu.clock.getClock() || t <= 0) {
     		addProcess(p);
     	} else {
     		scheduled.put(t, p);

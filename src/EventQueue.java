@@ -12,6 +12,7 @@ public class EventQueue {
 		queue.put(ecb.time, ecb);
 	}
 	
-	//enQueue()
-	//deQueue()
+	public void deQueue(ECB ecb) {
+		queue.remove(ecb);
+	}
 }

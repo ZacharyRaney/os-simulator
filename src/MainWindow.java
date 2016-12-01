@@ -5,9 +5,9 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+//import com.jgoodies.forms.layout.FormLayout;
+//import com.jgoodies.forms.layout.ColumnSpec;
+//import com.jgoodies.forms.layout.RowSpec;
 import java.awt.GridLayout;
 import javax.swing.JTextPane;
 import javax.swing.JTable;
@@ -35,13 +35,14 @@ public class MainWindow {
 				try {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
+					computer = new Computer(window);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 		
-		computer = new Computer();
+		
 	}
 
 	/**
@@ -111,5 +112,9 @@ public class MainWindow {
 		txtrConsoleoutput = new JTextArea();
 		txtrConsoleoutput.setEditable(false);
 		scrollPane.setViewportView(txtrConsoleoutput);
+	}
+	
+	public void printData(String s) {
+		txtrConsoleoutput.setText(txtrConsoleoutput.getText() + s + "\n");
 	}
 }
